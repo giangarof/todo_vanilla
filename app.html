@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+<style type="text/css">
+	*{
+		box-sizing: border-box;
+		margin: 0; padding: 0;
+	}
+
+	header{
+		padding: 1rem;
+		background-color: #d5dffd;
+		display: flex; 
+		align-items: end;
+	}
+
+	nav{
+		width: 100%;
+		display: flex;
+		flex-direction: row;
+		align-items:center;
+		justify-content: space-between;
+	}
+
+	section{
+		padding: 2rem;
+	}
+
+	.to_do {
+		background-color: #d5dffd;
+	}
+
+	.completed{
+		background-color: #59b859;
+	}
+
+	.completed > h2 {
+		color: #fff;
+	}
+
+	#div_first{
+		display: flex;
+		width: 90%;
+	}
+
+	#div_second{
+		display: flex;
+		width: 10%;
+	}
+
+	#input{
+		width: 100%;
+		height: 2rem;
+		outline:none;
+		border: gray solid 2px;
+	}
+
+	#add{
+		width: 2rem;
+		font-size: 1rem;
+		cursor: pointer;
+		border: none;
+		color: #fff;
+		background-color: green;
+	}
+
+	li{
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		line-height: 2rem;
+	}
+
+	/*li > p {
+		width: 8rem;
+	}*/
+	
+	.delete_task{
+		cursor: pointer;
+		position: absolute;
+		right: 10px;
+	}
+
+	.delete_task:hover{
+		color: red;
+	}
+
+	#delete_all{
+		cursor: pointer;
+		border: none;
+		background-color: red;
+		width: 100%;
+		font-size: 1rem;
+		color: #fff;
+		height: 2rem;
+	}
+
+	.mark_as_done{
+		cursor: pointer;
+	}
+
+	.done{
+		cursor: pointer;
+		text-decoration: line-through;
+	}
+
+
+</style>
+<body>
+
+	<main>
+		<header>
+			<h1>Todo App</h1>
+			<!-- <p>Track your daily list</p> -->
+		</header>
+		<nav>
+			<div id="div_first">
+				<input type="" name="" id="input">
+				<button id="add">+</button>
+			</div>
+			<div id="div_second">
+				<button id="delete_all">Clear All</button>
+			</div>
+		</nav>
+
+		<section class="to_do">
+			<h2>To Do</h2>
+			<ul id="ul"></ul>
+		</section>
+		<section class='completed'>
+			<h2>Completed</h2>
+			<ul id="completed_task"></ul>
+		</section>
+
+
+	</main>
+	
+	<script type="text/javascript">
+		const MyList = {
+			todo: [],
+			completed:[]
+		}
+		let list = JSON.parse(localStorage.getItem("MyList")) || { ...MyList }
+		let input = document.getElementById('input');
+		let add = document.getElementById('add')
+		const ul = document.getElementById('ul')
+		const completed_task = document.getElementById('completed_task')
+		const clear_all = document.getElementById('delete_all')
+
+		clear_all.addEventListener('click', () => {
+			alert('Are you sure you want to delete all your list?')
+			localStorage.removeItem('MyList')
+		})
+
+		if(list.todo.length === 0){
+				console.log('Start adding!')
+		}
+
+		const render = () => {
+
+			completed_task.innerHTML = '';
+			list.completed.forEach((task,i) => {
+				const li = document.createElement('li');
+				li.innerHTML = `
+					<p class="done">${task}</p> <p class='delete_task'>X</p>
+				`
+				completed_task.appendChild(li)
+
+				//mark as done
+				const undone = li.querySelector('.done')
+				undone.addEventListener('click', () => {
+					console.log(task)
+					undone.classList.toggle('done')
+					list.completed.splice(i,1)
+
+					setTimeout(() => {
+						alert(`You're adding "${task}" to your To Do list.`)
+						list.todo.push(task)
+						localStorage.setItem('MyList', JSON.stringify(list))
+						render()
+					},2000)
+				})
+
+				const deleteBtn = li.querySelector('.delete_task')
+				deleteBtn.addEventListener('click', (task) => {
+					list.completed.splice(i, 1)
+					localStorage.setItem('MyList', JSON.stringify(list))
+					render()
+				})
+			})
+
+
+			// display the list to do
+			ul.innerHTML = ''
+			list.todo.forEach((task, i) => {
+				const li = document.createElement('li')
+				li.innerHTML = `
+					<p class="mark_as_done">${task}</p> <p class='delete_task'>X</p>
+				`
+				ul.appendChild(li)
+
+				// delete task
+				const deleteBtn = li.querySelector('.delete_task')
+				deleteBtn.addEventListener('click', (task) => {
+					list.todo.splice(i, 1)
+					localStorage.setItem('MyList', JSON.stringify(list))
+					render()
+				})
+
+				//mark as done
+				const done = li.querySelector('.mark_as_done')
+				done.addEventListener('click', () => {
+					console.log(task)
+					done.classList.toggle('done')
+					list.todo.splice(i,1)
+
+					setTimeout(() => {
+						alert(`you have completed ${task}`)
+						list.completed.push(task)
+						localStorage.setItem('MyList', JSON.stringify(list))
+						render()
+					},2000)
+				})
+
+
+			})
+		}
+
+		//add task functionality
+		add.addEventListener('click', () => {
+			list.todo.push(input.value)
+			localStorage.setItem('MyList', JSON.stringify(list))
+			render()
+			input.value = ''
+		})
+
+		render()
+	</script>
+</body>
+</html>
