@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
+	<title>Todo App</title>
 </head>
 <style type="text/css">
 	*{
@@ -81,8 +81,8 @@
 	
 	.delete_task{
 		cursor: pointer;
-		position: absolute;
-		right: 10px;
+		/* position: absolute;
+		right: 10px; */
 	}
 
 	.delete_task:hover{
@@ -115,29 +115,85 @@
 	<main>
 		<header>
 			<h1>Todo App</h1>
-			<!-- <p>Track your daily list</p> -->
 		</header>
 		<nav>
-			<div id="div_first">
+			<form id="div_first">
 				<input type="" name="" id="input">
 				<button id="add">+</button>
-			</div>
+			</form>
 			<div id="div_second">
 				<button id="delete_all">Clear All</button>
 			</div>
 		</nav>
 
-		<section class="to_do">
-			<h2>To Do</h2>
+		<section class="to_do" id="to_do">
+			<h1 id="pending"></h1>
 			<ul id="ul"></ul>
 		</section>
-		<section class='completed'>
-			<h2>Completed</h2>
-			<ul id="completed_task"></ul>
+		<section>
+			<h1 id="completed"></h1>
+			<ul id="completed_list"></ul>
 		</section>
 
 
 	</main>
+
+	<script>
+		let all = document.getElementById('to_do')
+		let ul_completed = document.getElementById('completed_list')
+		let ul = document.getElementById('ul')
+		let add = document.getElementById('add');
+		let input = document.getElementById('input');
+		let delete_all = document.getElementById('delete_all')
+		const completed = document.getElementById('completed')
+		const pending = document.getElementById('pending')
+		
+		let MyList = {
+			todo: [],
+			completed: []
+		}
+		let task = JSON.parse(localStorage.getItem('MyList')) || {...MyList}
+
+		if(task.todo.length == 0){
+			ul.innerHTML += 'Nothing pending.'
+		} else{
+			pending.innerText = 'Pending'
+			task.todo.forEach((todo) => {
+				ul.innerHTML += `
+					<li class='delete_task'>${todo}</li>
+				`
+			})
+			completed.innerText = 'Completed'
+			if(task.completed == 0){
+				ul_completed.innerHTML += `Nothing completed yet...`
+			} else{
+				task.completed.forEach((done) => {
+					ul_completed.innerHTML += `
+					<li>${done}</li>
+					`
+				})
+			}
+
+		}
+
+
+		// add task
+		add.addEventListener('click', () => {
+			task.todo.push(input.value)
+			localStorage.setItem('MyList', JSON.stringify(task))
+			console.log(input.value)
+		})
+
+		// clear all
+		delete_all.addEventListener('click', () => {
+			localStorage.removeItem('MyList')
+			alert('everything was removed')
+			console.log('add deleted')
+			location.reload()	
+		})
+
+
+	</script>
 	
 	<!-- <script type="text/javascript">
 		const MyList = {
