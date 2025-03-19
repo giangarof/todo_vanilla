@@ -34,14 +34,6 @@
 		background-color: #d5dffd;
 	}
 
-	.completed{
-		background-color: #59b859;
-	}
-
-	.completed > h2 {
-		color: #fff;
-	}
-
 	#div_first{
 		display: flex;
 		width: 90%;
@@ -59,15 +51,6 @@
 		border: gray solid 2px;
 	}
 
-	#add{
-		width: 2rem;
-		font-size: 1rem;
-		cursor: pointer;
-		border: none;
-		color: #fff;
-		background-color: green;
-	}
-
 	li{
 		display: flex;
 		align-items: center;
@@ -75,18 +58,22 @@
 		line-height: 2rem;
 	}
 
-	/*li > p {
-		width: 8rem;
-	}*/
-	
-	.delete_task{
-		cursor: pointer;
-		/* position: absolute;
-		right: 10px; */
+	/* buttons and input*/
+
+	#input{
+		width: 100%;
+		height: 2rem;
+		outline:none;
+		border: gray solid 2px;
 	}
 
-	.delete_task:hover{
-		color: red;
+	#add{
+		width: 2rem;
+		font-size: 1rem;
+		cursor: pointer;
+		border: none;
+		color: #fff;
+		background-color: green;
 	}
 
 	#delete_all{
@@ -99,14 +86,33 @@
 		height: 2rem;
 	}
 
-	.mark_as_done{
+	/* pending */
+	.delete_task{
 		cursor: pointer;
+		/* position: absolute;
+		right: 10px; */
 	}
 
+	.delete_task:hover{
+		color: red;
+	}
 	.done{
 		cursor: pointer;
 		text-decoration: line-through;
 	}
+	
+	/* completed */
+	.delete{
+		cursor: pointer;
+
+	}
+
+	.delete:hover{
+		color: red;
+		text-decoration: line-through;
+		
+	}
+
 
 
 </style>
@@ -154,14 +160,18 @@
 		}
 		let task = JSON.parse(localStorage.getItem('MyList')) || {...MyList}
 
-		if(task.todo.length == 0){
+		if(task.todo.length === 0 && task.completed.length === 0){
 			ul.innerHTML += 'Nothing pending.'
 		} else{
+			if(task.todo.length === 0){
+				ul.innerHTML += 'Nothing pending.'
+
+			}
 			pending.innerText = 'Pending'
 			task.todo.forEach((todo) => {
 				ul.innerHTML += `
-					<li class='delete_task'>${todo}</li>
-				`
+					<li class='delete_task li'>${todo}</li>
+				`;
 			})
 			completed.innerText = 'Completed'
 			if(task.completed == 0){
@@ -169,13 +179,31 @@
 			} else{
 				task.completed.forEach((done) => {
 					ul_completed.innerHTML += `
-					<li>${done}</li>
+					<li class='delete'>${done}</li>
 					`
 				})
 			}
 
 		}
 
+		let li = document.querySelectorAll('.li');
+		// mark as done
+		li.forEach((i) => {
+			i.addEventListener('click', () => {
+				console.log(i)
+				i.classList.add('done')
+				task.completed.push(i.innerText)
+				const index = task.todo.indexOf(i.innerText);
+				if (index > -1) {
+					task.todo.splice(index, 1);
+				}
+
+				localStorage.setItem('MyList', JSON.stringify(task))
+				location.reload(); 
+
+
+			})
+		})
 
 		// add task
 		add.addEventListener('click', () => {
@@ -192,109 +220,28 @@
 			location.reload()	
 		})
 
+		// remove from completed array
+		let delete_item = document.querySelectorAll('.delete')
+		delete_item.forEach((i) => {
+			i.addEventListener('click', () => {
+				// alert(i.innerText)
+				// i.classList.add('done')
+				// task.completed.push(i.innerText)
+				const index = task.completed.indexOf(i.innerText);
+				if (index > -1) {
+					task.completed.splice(index, 1);
+				}
+
+				localStorage.setItem('MyList', JSON.stringify(task))
+				location.reload(); 
+
+
+			})
+		})
+
 
 	</script>
 	
-	<!-- <script type="text/javascript">
-		const MyList = {
-			todo: [],
-			completed:[]
-		}
-		let list = JSON.parse(localStorage.getItem("MyList")) || { ...MyList }
-		let input = document.getElementById('input');
-		let add = document.getElementById('add')
-		const ul = document.getElementById('ul')
-		const completed_task = document.getElementById('completed_task')
-		const clear_all = document.getElementById('delete_all')
-
-		clear_all.addEventListener('click', () => {
-			alert('Are you sure you want to delete all your list?')
-			localStorage.removeItem('MyList')
-		})
-
-		if(list.todo.length === 0){
-				console.log('Start adding!')
-		}
-
-		const render = () => {
-
-			completed_task.innerHTML = '';
-			list.completed.forEach((task,i) => {
-				const li = document.createElement('li');
-				li.innerHTML = `
-					<p class="done">${task}</p> <p class='delete_task'>X</p>
-				`
-				completed_task.appendChild(li)
-
-				//mark as done
-				const undone = li.querySelector('.done')
-				undone.addEventListener('click', () => {
-					console.log(task)
-					undone.classList.toggle('done')
-					list.completed.splice(i,1)
-
-					setTimeout(() => {
-						alert(`You're adding "${task}" to your To Do list.`)
-						list.todo.push(task)
-						localStorage.setItem('MyList', JSON.stringify(list))
-						render()
-					},2000)
-				})
-
-				const deleteBtn = li.querySelector('.delete_task')
-				deleteBtn.addEventListener('click', (task) => {
-					list.completed.splice(i, 1)
-					localStorage.setItem('MyList', JSON.stringify(list))
-					render()
-				})
-			})
-
-
-			// display the list to do
-			ul.innerHTML = ''
-			list.todo.forEach((task, i) => {
-				const li = document.createElement('li')
-				li.innerHTML = `
-					<p class="mark_as_done">${task}</p> <p class='delete_task'>X</p>
-				`
-				ul.appendChild(li)
-
-				// delete task
-				const deleteBtn = li.querySelector('.delete_task')
-				deleteBtn.addEventListener('click', (task) => {
-					list.todo.splice(i, 1)
-					localStorage.setItem('MyList', JSON.stringify(list))
-					render()
-				})
-
-				//mark as done
-				const done = li.querySelector('.mark_as_done')
-				done.addEventListener('click', () => {
-					console.log(task)
-					done.classList.toggle('done')
-					list.todo.splice(i,1)
-
-					setTimeout(() => {
-						alert(`you have completed ${task}`)
-						list.completed.push(task)
-						localStorage.setItem('MyList', JSON.stringify(list))
-						render()
-					},2000)
-				})
-
-
-			})
-		}
-
-		//add task functionality
-		add.addEventListener('click', () => {
-			list.todo.push(input.value)
-			localStorage.setItem('MyList', JSON.stringify(list))
-			render()
-			input.value = ''
-		})
-
-		render()
-	</script> -->
+	
 </body>
 </html>
