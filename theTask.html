@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<style>
+    
+</style>
+<body>
+
+    <main>
+        <header>
+            <h1>Your Task:</h1>
+            <h2 id="title"></h2>
+        </header>
+        <div>
+
+            <h2>Add subtasks</h2>
+        </div>
+        <nav>
+            <form id="div_first">
+                <input type="" name="" id="input">
+                <button id="add">+</button>
+            </form>
+            <div id="div_second">
+                <button id="delete_all">Clear All</button>
+            </div>
+        </nav>
+        <section class="to_do" id="to_do">
+			<h1 id="pending"></h1>
+			<ul id="ul"></ul>
+		</section>
+		<section>
+			<h1 id="completed_header"></h1>
+			<ul id="completed_list"></ul>
+		</section>
+    </main>
+
+    <script>
+        const completed_header = document.getElementById('completed_header')
+        let all = document.getElementById('to_do')
+        let ul_completed = document.getElementById('completed_list')
+		let ul = document.getElementById('ul')
+        const inner = document.getElementById('title');
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const index = parseInt(urlParams.get("id"), 10);
+        let myList = JSON.parse(localStorage.getItem("MyList")) || {task:[], completed:[]};
+        let todo = myList.todo[index];
+        let input = document.getElementById('input');
+        
+        
+        if(todo){
+            title.innerHTML = todo.task
+        } else {
+            title.innerHTML = `no found`
+        }
+
+        // display subtasks - IT WORKS
+        if(!todo && todo.subtask.length === 0){
+            ul.innerHTML += `No subtask, start adding.`
+        }else{
+            if(todo.subtask.length === 0){
+                ul.innerHTML += `Nothing pending`
+
+            } else {
+                todo.subtask.forEach(e => {
+                    ul.innerHTML += `
+                    <div class='li'>
+                        <li class='delete_task details'>${e}</li>
+                        <span class="check"> &checkmark; </span>
+                    </div>`
+                });
+            }
+
+            completed_header.innerText = 'Completed'
+            if(todo.completed.length === 0){
+                ul_completed.innerHTML += `Nothing completed yet...`
+            } else{
+                todo.completed.forEach(e => {
+                    ul_completed.innerHTML += `
+                        <li class='delete'>${e}</li>
+                    `
+                })
+            }
+            
+        }
+
+        
+        
+        // ADD SUBTASK - IT WORKS
+		add.addEventListener('click', (e) => {
+            e.preventDefault()
+            
+			console.log(input.value)
+            todo.subtask.push(input.value)
+            localStorage.setItem('MyList', JSON.stringify(myList))
+            input.value = ''
+            location.reload()
+		})
+
+
+        // COMPLETE SUBTASK - IT WORKS 
+        let complete = document.querySelectorAll('.check');
+        complete.forEach((x, i) => {
+            x.addEventListener('click', (e) => {
+                e.preventDefault()
+                const taskText = x.previousElementSibling.innerText;
+                x.classList.add('done')
+                // console.log(todo)
+                todo.completed.push(taskText)
+                if(i > -1){
+                    todo.subtask.splice(i,1)
+                }
+                localStorage.setItem('MyList', JSON.stringify(myList))
+                location.reload()
+            })
+        })
+
+        // DELETE TASK FROM LOCALSTORAGE - IT WORKS
+        let delete_item = document.querySelectorAll('.delete')
+		delete_item.forEach((x, i) => {
+			x.addEventListener('click', () => {
+                console.log(x)
+				const index = todo.completed.indexOf(x.innerText);
+                console.log(index)
+                if (index > -1) {
+					todo.completed.splice(index, 1);
+				}
+                localStorage.setItem('MyList', JSON.stringify(myList))
+                location.reload()
+			})
+		})
+
+        // DELETE ALL
+        delete_all.addEventListener('click', (e) => {
+			e.preventDefault()
+            todo.subtask = [];
+            todo.completed = [];
+            console.log(todo.subtask)
+            localStorage.setItem('MyList', JSON.stringify(myList))
+            location.reload()
+		})
+
+        // TODO
+        // display date
+        // reverse order
+        // if id do not exist display error
+        // improve UI/UX
+
+    </script>
+    
+</body>
+</html>

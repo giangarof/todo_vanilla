@@ -1,0 +1,143 @@
+
+	*{
+		box-sizing: border-box;
+		margin: 0; padding: 0;
+	}
+
+	header{
+		padding: 1rem;
+		background-color: #d5dffd;
+		display: flex; 
+		align-items: end;
+	}
+
+	nav{
+		width: 100%;
+		display: flex;
+		flex-direction: row;
+		align-items:center;
+		justify-content: space-between;
+	}
+
+	section{
+		padding: 2rem;
+	}
+
+	.to_do {
+		background-color: #d5dffd;
+	}
+
+	#div_first{
+		display: flex;
+		width: 90%;
+	}
+
+	#div_second{
+		display: flex;
+		width: 10%;
+	}
+
+	#input{
+		width: 100%;
+		height: 2rem;
+		outline:none;
+		border: gray solid 2px;
+	}
+
+	ul{
+		display: grid;
+		grid-template-columns: 4fr 4fr;
+		gap: 1.5rem;
+	}
+
+	.li{
+		width: 100%;
+		/* padding: 1rem; */
+		display: flex; 
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+		padding: 1rem;
+		
+		background-color: #fff;
+		
+
+	}
+
+	li{
+		list-style: none;
+
+	}
+
+	/* buttons and input*/
+
+	.check{
+		cursor: pointer;
+		/* display: flex; */
+		width: 5%;
+		border: none;
+		display: flex; justify-content: center;
+		border-radius: 100% 50%;
+		
+	}
+	
+	.check:hover{
+		color: rgb(255, 255, 255);
+		background-color: green;
+	}
+
+	.check:hover  .delete_task:hover{
+		color: red;
+	}
+
+
+	#input{
+		width: 100%;
+		height: 2rem;
+		outline:none;
+		border: gray solid 2px;
+	}
+
+	#add{
+		width: 2rem;
+		font-size: 1rem;
+		cursor: pointer;
+		border: none;
+		color: #fff;
+		background-color: green;
+	}
+
+	#delete_all{
+		cursor: pointer;
+		border: none;
+		background-color: red;
+		width: 100%;
+		font-size: 1rem;
+		color: #fff;
+		height: 2rem;
+	}
+
+	/* pending */
+	.delete_task{
+		cursor: pointer;
+		/* position: absolute;
+		right: 10px; */
+	}
+
+	
+	.done{
+		cursor: pointer;
+		text-decoration: line-through;
+	}
+	
+	/* completed */
+	.delete{
+		cursor: pointer;
+
+	}
+
+	.delete:hover{
+		color: red;
+		text-decoration: line-through;
+		
+	}
