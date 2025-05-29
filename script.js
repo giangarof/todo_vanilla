@@ -23,11 +23,15 @@ let task = JSON.parse(localStorage.getItem('MyList')) || {...MyList}
 			ul.innerHTML = 'Nothing pending.'
 		}
 		pending.innerText = 'Pending'
-		task.todo.forEach((todo) => {
+		task.todo.reverse().forEach((todo) => {
 			ul.innerHTML += `
 			<div class='li'>
-				<li class='delete_task details'>${todo.task}</li>
-				<span class="check"> &checkmark; </span>
+				<div class='inner_li'>
+					<li class='delete_task details'>${todo.task}</li>
+					<span class="check"> &checkmark; </span>
+				</div>
+				<span>Added: ${todo.date}</span>
+				
 			</div>
 			`;
 		})
@@ -35,6 +39,7 @@ let task = JSON.parse(localStorage.getItem('MyList')) || {...MyList}
 		if(task.completed == 0){
 			ul_completed.innerHTML += `Nothing completed yet...`
 		} else{
+			// console.log(task)
 			task.completed.forEach((done) => {
 				ul_completed.innerHTML += `
 				<li class='delete'>${done}</li>
@@ -55,7 +60,7 @@ let task = JSON.parse(localStorage.getItem('MyList')) || {...MyList}
 		let complete = document.querySelectorAll('.check');
 		complete.forEach((x, i) => {
             x.addEventListener('click', () => {
-                console.log(i)
+                console.log(x)
                 const taskText = x.previousElementSibling.innerText;
                 // window.location.href = `theTask.html?id=${x}`
 				x.classList.add('done')
@@ -73,15 +78,18 @@ let task = JSON.parse(localStorage.getItem('MyList')) || {...MyList}
 		// add task - IT WORKS
 		add.addEventListener('click', (e) => {
 			e.preventDefault()
+			const today = new Date();
 			const newTask = {
 				task: input.value,
 				subtask: [],
-				completed:[]
+				completed:[],
+				date: `${today.getMonth()}, ${today.getDate()}, ${today.getFullYear()}`
 			}
             
 			task.todo.push(newTask)
 			localStorage.setItem('MyList', JSON.stringify(task))
 			location.reload()
+			console.log(newTask)
 		})
 
 		// clear all - IT WORKS
@@ -95,7 +103,9 @@ let task = JSON.parse(localStorage.getItem('MyList')) || {...MyList}
 		// REMOVE ONE TASK - IT WORKS
 		let delete_item = document.querySelectorAll('.delete')
 		delete_item.forEach((i) => {
-			i.addEventListener('click', () => {
+			// console.log(task)
+			i.addEventListener('click', (e) => {
+				// e.preventDefault()
 				// alert(i.innerText)
 				// i.classList.add('done')
 				// task.completed.push(i.innerText)
@@ -110,3 +120,9 @@ let task = JSON.parse(localStorage.getItem('MyList')) || {...MyList}
 
 			})
 		})
+
+
+
+		// TODO
+        // if id do not exist display error
+        // improve UI/UX

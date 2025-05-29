@@ -14,10 +14,10 @@
 
     <main>
         <header>
-            <h1>Your Task:</h1>
-            <h2 id="title"></h2>
-        </header>
+			<h1>Todo App</h1>
+		</header>
         <div>
+            <h2 id="title"></h2>
 
             <h2>Add subtasks</h2>
         </div>
@@ -65,13 +65,16 @@
             ul.innerHTML += `No subtask, start adding.`
         }else{
             if(todo.subtask.length === 0){
-                ul.innerHTML += `Nothing pending`
+                ul.innerHTML += `
+                    <p>Nothing in stack</p>
+                `
 
             } else {
-                todo.subtask.forEach(e => {
+                todo.subtask.reverse().forEach(e => {
                     ul.innerHTML += `
                     <div class='li'>
                         <li class='delete_task details'>${e}</li>
+                        <span> ${todo.date} </span>
                         <span class="check"> &checkmark; </span>
                     </div>`
                 });
