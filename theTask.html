@@ -14,34 +14,45 @@
 
     <main>
         <header>
-			<h1>Todo App</h1>
+            <a href="./index.html">
+			    <h1>Todo App</h1>
+            </a>
 		</header>
-        <div>
-            <h2 id="title"></h2>
-
-            <h2>Add subtasks</h2>
+        <div id="title">
+            <!-- <h2 id="title"></h2>
+            <h2>Add subtasks</h2> -->
         </div>
         <nav>
-            <form id="div_first">
-                <input type="" name="" id="input">
-                <button id="add">+</button>
-            </form>
-            <div id="div_second">
-                <button id="delete_all">Clear All</button>
-            </div>
+            <div class="inner_nav">
+				<form id="div_first">
+					<input type="" name="" id="input" placeholder="add task">
+					<button id="add">+</button>
+				</form>
+				<div id="div_second">
+					<button id="delete_all">Clear All</button>
+				</div>
+
+			</div>
         </nav>
-        <section class="to_do" id="to_do">
-			<h1 id="pending"></h1>
-			<ul id="ul"></ul>
-		</section>
-		<section>
-			<h1 id="completed_header"></h1>
-			<ul id="completed_list"></ul>
-		</section>
+
+        <div class="centered">
+			<div class="inner_centered">
+				<section class="to_do" id="to_do">
+					<h1 id="pending"></h1>
+					<ul id="ul"></ul>
+				</section>
+				<section>
+					<h1 id="completed"></h1>
+					<ul id="completed_list"></ul>
+				</section>
+
+			</div>
+		</div>
     </main>
 
     <script>
-        const completed_header = document.getElementById('completed_header')
+        const title = document.getElementById('title')
+        const completed_header = document.getElementById('completed')
         let all = document.getElementById('to_do')
         let ul_completed = document.getElementById('completed_list')
 		let ul = document.getElementById('ul')
@@ -55,38 +66,51 @@
         
         
         if(todo){
-            title.innerHTML = todo.task
+            title.innerHTML += `
+                <h2>${todo.task}</h2>
+            `
         } else {
-            title.innerHTML = `no found`
+            title.innerHTML = `No found`
         }
 
         // display subtasks - IT WORKS
         if(!todo && todo.subtask.length === 0){
             ul.innerHTML += `No subtask, start adding.`
-        }else{
+        } else{
             if(todo.subtask.length === 0){
                 ul.innerHTML += `
-                    <p>Nothing in stack</p>
+                <p>Nothing in stack</p>
                 `
-
-            } else {
-                todo.subtask.reverse().forEach(e => {
-                    ul.innerHTML += `
-                    <div class='li'>
-                        <li class='delete_task details'>${e}</li>
-                        <span> ${todo.date} </span>
-                        <span class="check"> &checkmark; </span>
-                    </div>`
+                
+            } 
+                let html = ''
+                pending.innerText = 'Pending'
+                todo.subtask.forEach((e) => {
+                    html += `
+                        <div class='li'>
+                            <div class='inner_li'>
+                                <li class='delete_task details'>${e.subtask}</li>
+                                <span class="check"> &checkmark; </span>
+                            </div>
+                            <span>Added: ${e.date}</span>
+                    
+                        </div>`
                 });
-            }
+                ul.innerHTML += html
+            
 
             completed_header.innerText = 'Completed'
             if(todo.completed.length === 0){
                 ul_completed.innerHTML += `Nothing completed yet...`
             } else{
-                todo.completed.forEach(e => {
+                todo.completed.forEach((e) => {
                     ul_completed.innerHTML += `
-                        <li class='delete'>${e}</li>
+                        <div class='li'>
+                            <div class='inner_li'>
+                                <li class='delete'>${e.subtask}</li>
+                            </div>
+                            <span>Completed: ${e.completed}</span>
+					    </div>
                     `
                 })
             }
@@ -98,9 +122,13 @@
         // ADD SUBTASK - IT WORKS
 		add.addEventListener('click', (e) => {
             e.preventDefault()
-            
 			console.log(input.value)
-            todo.subtask.push(input.value)
+            const today = new Date();
+			const newsubtask = {
+				subtask: input.value,
+				date: `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`
+			}
+            todo.subtask.unshift(newsubtask)
             localStorage.setItem('MyList', JSON.stringify(myList))
             input.value = ''
             location.reload()
@@ -113,9 +141,16 @@
             x.addEventListener('click', (e) => {
                 e.preventDefault()
                 const taskText = x.previousElementSibling.innerText;
+
+                const today = new Date();
+                const complete = {
+					subtask: taskText,
+					completed: `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`
+				}
+                
                 x.classList.add('done')
                 // console.log(todo)
-                todo.completed.push(taskText)
+                todo.completed.push(complete)
                 if(i > -1){
                     todo.subtask.splice(i,1)
                 }
@@ -129,7 +164,7 @@
 		delete_item.forEach((x, i) => {
 			x.addEventListener('click', () => {
                 console.log(x)
-				const index = todo.completed.indexOf(x.innerText);
+				const index = todo.completed.findIndex(item => item.subtask === x.innerText);
                 console.log(index)
                 if (index > -1) {
 					todo.completed.splice(index, 1);
@@ -148,12 +183,6 @@
             localStorage.setItem('MyList', JSON.stringify(myList))
             location.reload()
 		})
-
-        // TODO
-        // display date
-        // reverse order
-        // if id do not exist display error
-        // improve UI/UX
 
     </script>
     

@@ -15,16 +15,17 @@ let MyList = {
 
 let task = JSON.parse(localStorage.getItem('MyList')) || {...MyList}
 
-	// Display the task to to
+	// Display the task to do
 	if(!task.todo && task.completed.length === 0){
 		ul.innerHTML += 'Nothing pending.'
 	} else{
 		if(task.todo.length === 0){
 			ul.innerHTML = 'Nothing pending.'
 		}
+		let html = '';
 		pending.innerText = 'Pending'
-		task.todo.reverse().forEach((todo) => {
-			ul.innerHTML += `
+		task.todo.forEach((todo) => {
+			html += `
 			<div class='li'>
 				<div class='inner_li'>
 					<li class='delete_task details'>${todo.task}</li>
@@ -35,14 +36,22 @@ let task = JSON.parse(localStorage.getItem('MyList')) || {...MyList}
 			</div>
 			`;
 		})
+		ul.innerHTML += html;
+
+		
 		completed.innerText = 'Completed'
 		if(task.completed == 0){
 			ul_completed.innerHTML += `Nothing completed yet...`
 		} else{
 			// console.log(task)
-			task.completed.forEach((done) => {
+			task.completed.forEach((x) => {
 				ul_completed.innerHTML += `
-				<li class='delete'>${done}</li>
+					<div class='li'>
+						<div class='inner_li'>
+							<li class='delete'>${x.task}</li>
+						</div>
+						<span>Completed: ${x.completed}</span>
+					</div>
 				`
 			})
 		}
@@ -56,15 +65,19 @@ let task = JSON.parse(localStorage.getItem('MyList')) || {...MyList}
             })
         })
 
-		// mark as done - IT WORKS
+		// mark as complete - IT WORKS
 		let complete = document.querySelectorAll('.check');
 		complete.forEach((x, i) => {
             x.addEventListener('click', () => {
-                console.log(x)
+				console.log(x)
+				const today = new Date();
                 const taskText = x.previousElementSibling.innerText;
-                // window.location.href = `theTask.html?id=${x}`
+				const complete = {
+					task:taskText,
+					completed: `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`
+				}
 				x.classList.add('done')
-				task.completed.push(taskText)
+				task.completed.push(complete)
 				if (i > -1) {
 					task.todo.splice(i, 1);
 				}
@@ -83,10 +96,10 @@ let task = JSON.parse(localStorage.getItem('MyList')) || {...MyList}
 				task: input.value,
 				subtask: [],
 				completed:[],
-				date: `${today.getMonth()}, ${today.getDate()}, ${today.getFullYear()}`
+				date: `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`
 			}
             
-			task.todo.push(newTask)
+			task.todo.unshift(newTask)
 			localStorage.setItem('MyList', JSON.stringify(task))
 			location.reload()
 			console.log(newTask)
@@ -103,13 +116,9 @@ let task = JSON.parse(localStorage.getItem('MyList')) || {...MyList}
 		// REMOVE ONE TASK - IT WORKS
 		let delete_item = document.querySelectorAll('.delete')
 		delete_item.forEach((i) => {
-			// console.log(task)
+			
 			i.addEventListener('click', (e) => {
-				// e.preventDefault()
-				// alert(i.innerText)
-				// i.classList.add('done')
-				// task.completed.push(i.innerText)
-				const index = task.completed.indexOf(i.innerText);
+				const index = task.completed.findIndex(item => item.task === i.innerText);
 				if (index > -1) {
 					task.completed.splice(index, 1);
 				}
@@ -120,9 +129,3 @@ let task = JSON.parse(localStorage.getItem('MyList')) || {...MyList}
 
 			})
 		})
-
-
-
-		// TODO
-        // if id do not exist display error
-        // improve UI/UX
